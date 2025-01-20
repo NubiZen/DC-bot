@@ -2,10 +2,11 @@ import os
 import asyncio
 import discord
 
-token = "user_token_anda"  # Masukkan token user
+token = "your_user_token"  # Masukkan token user Anda
 replyMessage = 'Hallo Guys'
-channelId = 182651  # Ganti dengan ID kanal Anda
-delay = 15
+channelId = 182651  # Ganti dengan ID kanal valid
+send_delay = 50  # Delay pengiriman pesan
+delete_delay = 7  # Delay penghapusan pesan
 
 mainMessages = [
     'Welcome to everyone that just joined!',
@@ -48,8 +49,9 @@ class Main(discord.Client):
                 for i, msg in enumerate(mainMessages):
                     sent_message = await channel.send(msg)
                     print(f'Sent message {i + 1} in #{channel.name}.')
-                    await asyncio.sleep(delay)
-                    await sent_message.delete()
+                    await asyncio.sleep(send_delay) 
+                    await sent_message.delete()  
+                    await asyncio.sleep(delete_delay)  
             except Exception as e:
                 print(f"Error: {e}")
                 break
@@ -61,13 +63,14 @@ class Main(discord.Client):
                     try:
                         sent_message = await message.reply(replyMessage)
                         print(f'Replied to {message.author.name}.')
-                        await asyncio.sleep(delay)
-                        await sent_message.delete()
+                        await asyncio.sleep(delete_delay) 
+                        await sent_message.delete() 
                         with open('blacklist.txt', 'a', encoding='UTF-8') as file:
                             file.write(f'{message.author.id}\n')
                     except Exception as e:
                         print(f"Error: {e}")
 
 if __name__ == '__main__':
-    client = Main()
-    client.run(token, bot=False)
+    intents = discord.Intents.default()
+    client = Main(intents=intents)
+    client.run(token, bot=False) 
