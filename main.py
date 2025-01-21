@@ -40,7 +40,7 @@ class Main(discord.Client):
                 sent_message = await channel.send(msg.strip())  # Menghapus newline (\n)
                 print(f'Sent message {i + 1} in #{channel.name}.')
                 
-                # Jadwalkan penghapusan pesan
+                # Jadwalkan penghapusan pesan tanpa mengganggu pengiriman pesan berikutnya
                 asyncio.create_task(self.delete_message_after(sent_message, delete_delay))
                 
                 # Tunggu sebelum mengirim pesan berikutnya
