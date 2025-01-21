@@ -2,34 +2,23 @@ import os
 import asyncio
 import discord
 
-token = "tokenmu" # Masukkan token user Anda
+token = "fffff"  # Masukkan token user Anda
 replyMessage = 'Hallo Guys'
-channelId = 26253  # Ganti dengan ID kanal valid
+channelId = 984941796272521229  # Ganti dengan ID kanal valid
 send_delay = 50  # Delay pengiriman pesan
-delete_delay = 7  # Delay penghapusan pesan
+delete_delay = 100  # Delay penghapusan pesan
 
-mainMessages = [
-    'Welcome to everyone that just joined!',
-    'Let’s go guys, keep it up!',
-    'Be active!',
-    'How can you guys type so fast?',
-    'You guys still grinding here?',
-    'Stay motivated and never give up!',
-    'Remember, success takes time and effort.',
-    'Let’s build a great community here!',
-    'Don’t forget to help each other out.',
-    'Who’s ready for some challenges?',
-    'Keep pushing forward, no matter what!',
-    'Teamwork makes the dream work!',
-    'Any fun stories to share today?',
-    'What are you guys working on right now?',
-    'Consistency is the key to success!',
-    'Don’t be shy, let’s chat!',
-    'Let’s make today productive!',
-    'Always remember to take breaks!',
-    'You guys are doing great, keep going!',
-    'The grind never stops, let’s go!',
-]
+# Fungsi untuk membaca pesan dari file eksternal
+def load_messages_from_file(file_name):
+    if os.path.exists(file_name):
+        with open(file_name, 'r', encoding='UTF-8') as file:
+            return file.readlines()
+    else:
+        print(f"File {file_name} tidak ditemukan.")
+        return []
+
+# Mengambil pesan dari file 'messages.txt'
+mainMessages = load_messages_from_file('messages.txt')
 
 class Main(discord.Client):
     def __init__(self, **kwargs):
@@ -46,12 +35,16 @@ class Main(discord.Client):
                 if channel is None:
                     print("Invalid channel ID. Please check.")
                     break
+
+                # Kirimkan satu pesan pada satu waktu
                 for i, msg in enumerate(mainMessages):
-                    sent_message = await channel.send(msg)
+                    # Kirim pesan dari file
+                    sent_message = await channel.send(msg.strip())  # Menghapus newline (\n)
                     print(f'Sent message {i + 1} in #{channel.name}.')
-                    await asyncio.sleep(delete_delay)  
-                    await sent_message.delete()  
-                    await asyncio.sleep(send_delay)  
+                    await asyncio.sleep(delete_delay)  # Tunggu untuk penghapusan pesan
+                    await sent_message.delete()  # Hapus pesan setelah delay
+                    await asyncio.sleep(send_delay)  # Tunggu sebelum mengirim pesan selanjutnya
+
             except Exception as e:
                 print(f"Error: {e}")
                 break
@@ -63,8 +56,8 @@ class Main(discord.Client):
                     try:
                         sent_message = await message.reply(replyMessage)
                         print(f'Replied to {message.author.name}.')
-                        await asyncio.sleep(delete_delay)  
-                        await sent_message.delete()  
+                        await asyncio.sleep(delete_delay)  # Tunggu sebelum menghapus pesan
+                        await sent_message.delete()  # Hapus pesan setelah reply
                         with open('blacklist.txt', 'a', encoding='UTF-8') as file:
                             file.write(f'{message.author.id}\n')
                     except Exception as e:
@@ -73,4 +66,4 @@ class Main(discord.Client):
 if __name__ == '__main__':
     intents = discord.Intents.default()
     client = Main(intents=intents)
-    client.run(token, bot=False)  
+    client.run(token, bot=False)
